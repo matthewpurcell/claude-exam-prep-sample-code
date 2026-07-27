@@ -9,9 +9,14 @@
 | [demo3](ccar-f-demos/demo3/tool_choice.ipynb) | Anthropic SDK: `tool_choice` | Notebook — needs the venv and an API key |
 | [demo4](ccar-f-demos/demo4/README.md) | Path-scoped rules with `.claude/rules/` | Claude Code in VS Code — no setup |
 | [demo5](ccar-f-demos/demo5/README.md) | Skill frontmatter: `context: fork`, `allowed-tools`, `argument-hint` | Claude Code in VS Code — no setup |
+| [demo6](ccar-f-demos/demo6/README.md) | Anthropic SDK: enforcing a JSON schema with structured outputs | Notebook — needs the venv and an API key |
 
-Demos 1–3 are Jupyter notebooks — follow the setup below. Demos 4 and 5 run in a
-Claude Code session in VS Code and need no Python environment and no API key;
+Demos 1, 3 and 6 use the Anthropic SDK directly against the Messages API. Demo 2
+uses the Claude Agent SDK — the Claude Code harness as a library. Demos 4 and 5
+are the Claude Code harness itself. Three layers, six demos.
+
+Demos 1–3 and 6 are Jupyter notebooks — follow the setup below. Demos 4 and 5 run
+in a Claude Code session in VS Code and need no Python environment and no API key;
 each has its own README with the steps.
 
 ## How to run

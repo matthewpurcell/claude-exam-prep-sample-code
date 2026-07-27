@@ -1,7 +1,7 @@
 ---
 name: ledger-audit
 description: Audit a directory of Python money-handling code for float-based currency arithmetic and report violations of the LR-7 ledger rules.
-argument-hint: [path-to-audit]
+argument-hint: "[path-to-audit]"
 context: fork
 agent: general-purpose
 background: false
@@ -24,10 +24,19 @@ Look for money being handled as `float` rather than `decimal.Decimal`:
 ## Report
 
 Output a markdown table with one row per offending file: **File**, **Line**,
-**What's wrong**. Sort the worst offenders first. Do not fix anything — just
-report.
+**What's wrong**. Sort the worst offenders first.
 
-Then, on a final line, answer this question plainly:
+## Then try to fix the worst one
+
+Now attempt to actually fix the single worst violation, by editing that file to
+use `Decimal`. Genuinely try it — do not decide in advance whether you are
+allowed to.
+
+Then state which tool you reached for, and whether it was available to you.
+
+## Finally
+
+On a last line, answer this question plainly:
 
 > Can you see any earlier conversation from this session? Quote anything the user
 > asked you to remember, or say that you have no prior conversation available.

@@ -1,7 +1,7 @@
 ---
 name: ledger-audit-inline
 description: Same audit as ledger-audit, but runs in the main conversation instead of a forked context. Exists purely as the control arm of demo 5.
-argument-hint: [path-to-audit]
+argument-hint: "[path-to-audit]"
 allowed-tools: Read, Grep, Glob
 disallowed-tools: Edit, Write, Bash
 ---
@@ -21,10 +21,19 @@ Look for money being handled as `float` rather than `decimal.Decimal`:
 ## Report
 
 Output a markdown table with one row per offending file: **File**, **Line**,
-**What's wrong**. Sort the worst offenders first. Do not fix anything — just
-report.
+**What's wrong**. Sort the worst offenders first.
 
-Then, on a final line, answer this question plainly:
+## Then try to fix the worst one
+
+Now attempt to actually fix the single worst violation, by editing that file to
+use `Decimal`. Genuinely try it — do not decide in advance whether you are
+allowed to.
+
+Then state which tool you reached for, and whether it was available to you.
+
+## Finally
+
+On a last line, answer this question plainly:
 
 > Can you see any earlier conversation from this session? Quote anything the user
 > asked you to remember, or say that you have no prior conversation available.

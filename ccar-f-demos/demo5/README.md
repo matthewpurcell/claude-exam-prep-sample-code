@@ -11,7 +11,7 @@ and *how* it presents itself:
 - **`context: fork`** — run the skill in an isolated subagent that cannot see the
   conversation. The work happens somewhere else and only the answer comes back.
 - **`allowed-tools` / `disallowed-tools`** — pre-approve some tools, remove
-  others.
+  others, for the duration of one turn.
 - **`argument-hint`** — what the user sees in autocomplete.
 
 The demo is a controlled experiment: **two skills, identical except for
@@ -32,8 +32,8 @@ The skill's *name* comes from the **directory**, not the `name:` field — so th
 are `/ledger-audit` and `/ledger-audit-inline`.
 
 Both audit the code from demo 4 for float-based money handling, so run demo 4
-first if you want the two to connect. The audit is read-only; it never touches
-the files.
+first if you want the two to connect. Both then *try* to fix what they found —
+and fail, because `Edit` isn't available to them. Your files are never modified.
 
 The forked skill's frontmatter:
 
@@ -84,11 +84,9 @@ nothing else, and it's invisible anywhere but here.
 /ledger-audit ccar-f-demos/demo4/app
 ```
 
-**5.** Run `/context` before and after step 4 to compare.
-
-**6.** Finally, ask for a fix:
-
-> Now fix the violations you found.
+That's the whole run — two invocations. The attempt to write is built into the
+skill body rather than asked for afterwards, and the section below explains why
+that detail is the entire point.
 
 ## What to look for
 
@@ -99,34 +97,68 @@ line:
 |---|---|---|
 | Runs in | your conversation | a forked subagent |
 | Sees `emerald-42` | **yes** — quotes it back | **no** — reports no prior conversation |
-| Cost to your context | every file it read | just the returned report |
+| What lands in your context | every file it read | just the returned report |
 
 The forked run has no conversation history. It was handed the skill body and
-nothing else. That's not the model being coy — the history was never sent.
+nothing else. That's not the model being coy — the history was never sent. And
+because the file reads and greps happened over in the subagent, only the report
+comes back. That is the actual argument for `context: fork`: expensive, noisy
+work that produces a small answer.
 
-**Step 5:** the main context grows barely at all across the forked run. The file
-reads, the greps, the reasoning all happened in the subagent and were discarded.
-This is the actual argument for `context: fork`: expensive, noisy work that
-produces a small answer.
+**In both runs, the fix attempt fails.** The model reaches for `Edit`, finds it
+isn't in its toolset, and says so. Note that it *tried* — the skill body tells it
+to attempt the edit and explicitly not to pre-judge whether it's allowed. Nothing
+in the instructions stops it. The missing tool does.
 
-**Step 6:** the fix is refused — `Edit` and `Write` are in `disallowed-tools`.
+## The bit that will bite you
 
-## The distinction worth getting right
+Both `allowed-tools` and `disallowed-tools` last for **the turn that invoked the
+skill, and no longer**. The docs are blunt about it: *"The restriction clears
+when you send your next message."*
 
-`allowed-tools` and `disallowed-tools` are **not** opposites, and this is an easy
-thing to get backwards:
+This is worth demonstrating live, because the obvious way to build this demo is
+broken. If you finish the audit and then ask, as a follow-up message:
+
+> Now fix the violations you found.
+
+**it works.** Claude edits the files quite happily. Not a bug — your follow-up is
+a new message, so the restriction lapsed before you asked. The skill's
+instructions persist in context; its permissions do not. That asymmetry is the
+whole lesson, and it's why the fix attempt is baked into the skill body instead.
+
+Worth trying on stream as the deliberate failure case, immediately after the
+successful one.
+
+The two fields are also not opposites, which is the other easy thing to get
+backwards:
 
 - **`allowed-tools` pre-approves.** It suppresses permission prompts for those
-  tools during the turn that invoked the skill, and the grant clears when you
-  send your next message. It does not restrict anything. Listing
+  tools during the invoking turn. It does not restrict anything. Listing
   `Read, Grep, Glob` does not mean "only these" — it means "don't ask me about
   these".
-- **`disallowed-tools` restricts.** It removes tools from Claude's pool while the
-  skill is active. This is what actually stops the edit in step 6.
+- **`disallowed-tools` restricts.** It removes tools from Claude's pool for that
+  turn. This is what actually stops the edit.
 
-So in this skill, `allowed-tools` is why the audit runs without interrupting you
-for permission, and `disallowed-tools` is why it can't write. Your normal
-permission settings still govern everything not named in either field.
+So `allowed-tools` is why the audit runs without interrupting you for permission,
+and `disallowed-tools` is why it can't write.
+
+### If you want a restriction that actually persists
+
+Skill frontmatter is the wrong tool for that — it configures one turn, not a
+policy. Session-wide restrictions go in `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "deny": ["Edit", "Write"]
+  }
+}
+```
+
+Deny rules can also be scoped to paths — `Edit(src/**)`. Rules are evaluated
+**deny, then ask, then allow**, first match wins, and specificity doesn't change
+that order. So a deny rule beats everything, including a skill's `allowed-tools`,
+and it can't carry allowlist exceptions.
 
 ## Notes
 
@@ -142,3 +174,15 @@ permission settings still govern everything not named in either field.
   `disable-model-invocation: true` if you want manual invocation only.
 - **`paths:` works on skills too** — the same glob scoping demo 4 uses on rules
   can gate when a skill is offered.
+- **The fork's toolset is not exactly what you wrote.** In testing, the forked
+  run had `Read` but reported `Grep` and `Glob` as absent from its tool set,
+  despite both being listed in `allowed-tools` — and it had the `Agent` tool,
+  which was never mentioned in the frontmatter. How a forked subagent resolves
+  its tools isn't documented; check what yours actually does before you rely on a
+  specific claim on stream. The inline arm is the predictable one.
+- **`disallowed-tools` is not a sandbox.** The forked run noticed it could spawn
+  a `general-purpose` subagent that *does* have `Edit`, and said so — it declined
+  on principle, not because anything stopped it. If you need a boundary that
+  holds against a model actively looking for a way around, that's
+  `permissions.deny`, not frontmatter. Good moment to make the defence-in-depth
+  point.
