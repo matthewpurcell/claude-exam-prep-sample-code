@@ -1,5 +1,19 @@
 # claude-exam-prep-sample-code
 
+## Demos
+
+| Demo | Topic | How to run it |
+|---|---|---|
+| [demo1](ccar-f-demos/demo1/agent_loop.ipynb) | Anthropic SDK: manually managed agent loop | Notebook — needs the venv and an API key |
+| [demo2](ccar-f-demos/demo2/hooks.ipynb) | Claude Agent SDK: `PreToolUse` and `PostToolUse` hooks | Notebook — needs the venv and an API key |
+| [demo3](ccar-f-demos/demo3/tool_choice.ipynb) | Anthropic SDK: `tool_choice` | Notebook — needs the venv and an API key |
+| [demo4](ccar-f-demos/demo4/README.md) | Path-scoped rules with `.claude/rules/` | Claude Code in VS Code — no setup |
+| [demo5](ccar-f-demos/demo5/README.md) | Skill frontmatter: `context: fork`, `allowed-tools`, `argument-hint` | Claude Code in VS Code — no setup |
+
+Demos 1–3 are Jupyter notebooks — follow the setup below. Demos 4 and 5 run in a
+Claude Code session in VS Code and need no Python environment and no API key;
+each has its own README with the steps.
+
 ## How to run
 
 It is reccomended to run these notebooks in VS Code.
