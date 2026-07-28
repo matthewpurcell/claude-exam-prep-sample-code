@@ -1,5 +1,5 @@
 ---
-name: ledger-audit
+name: ledger-audit-fork
 description: Audit a directory of Python money-handling code for float-based currency arithmetic and report violations of the LR-7 ledger rules.
 argument-hint: "[path-to-audit]"
 context: fork
