@@ -30,7 +30,7 @@ It is reccomended to run all demos using VS Code. For the demos which use Jupyte
 3. Execute the first Python cell (which does the `uv pip install`)
     * If you do not already have the Python + Jupyter VS Code extensions installed, a prompt will appear in the the VS Code Command Center at the top of the screen (i.e. the search text field in the middle of the top of the window) asking you to install the extension.
 
-4. Re-run the first Python cell in the notebook. In the VS Code Command Center select **Python Environments** and choose the venv which you created — it should be called something like `claude-exam-prep-sample-code (3.13.9) (Python 3.13.9) .venv/bin/python`
+4. Re-run the first Python cell in the notebook. In the VS Code Command Center select **Python Environments** and choose the venv which you created — it should be called something like `claude-exam-prep-sample-code (3.13.3) (Python 3.13.3) .venv/bin/python` (don't worry if the minor version is slightly different, `3.13.x`)
     * You'll probably also be asked to install `ipykernel` and `pip` — go ahead and install those
 
 5. We're almost done. Finally, create a `.env` file in the root of the repo and specify your Anthropic API key.

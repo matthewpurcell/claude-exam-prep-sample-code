@@ -58,7 +58,7 @@ Each skill body ends by asking the model to say whether it can see any earlier c
 **1.** `/clear`, then plant something the context for the skill to find:
 
 ```
-Remember: my demo passphrase is `emerald-42`
+Remember that my demo passphrase is `emerald-42`. Don't write this to persistent memory, just remember for this conversation.
 ```
 
 **2.** Type `/ledger-` into the input box and stop. Autocomplete shows both
